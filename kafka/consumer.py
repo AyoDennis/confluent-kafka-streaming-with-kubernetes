@@ -1,10 +1,18 @@
 import json
+import os
 
 from kafka import KafkaConsumer
+from dotenv import load_dotenv
 
-KAFKA_TOPIC = 'customer_information'
-KAFKA_BOOTSTRAP = 'localhost:9092'
-KAFKA_GROUP_ID = 'customer-info'
+load_dotenv()
+
+conf = {
+'bootstrap_servers': os.getenv("BOOTSTRAP_SERVER"),
+'sasl.mechanism': 'PLAIN',
+'security_protocol': 'SSL',
+'sasl.username': os.getenv("SASL_USERNAME"), # You put API Key here
+'sasl.opassword': os.getenv("SASL_PASSWORD") # You put API Secret here
+}
 
 
 def consume_messages():
