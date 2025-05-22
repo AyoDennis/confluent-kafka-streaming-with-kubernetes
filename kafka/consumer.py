@@ -7,11 +7,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 conf = {
-'bootstrap_servers': os.getenv("BOOTSTRAP_SERVER"),
-'sasl.mechanism': 'PLAIN',
-'security_protocol': 'SSL',
-'sasl.username': os.getenv("SASL_USERNAME"), # You put API Key here
-'sasl.opassword': os.getenv("SASL_PASSWORD") # You put API Secret here
+    'bootstrap.servers': '<ccloud bootstrap servers>',
+    'sasl.mechanism': 'PLAIN',
+    'security.protocol': 'SASL_SSL',
+    'sasl.username': '<ccloud key>',
+    'sasl.password': '<ccloud secret>',
+    'group.id': 'id',
+    'auto.offset.reset': 'earliest',
+    'error_cb': error_cb,
 }
 
 
