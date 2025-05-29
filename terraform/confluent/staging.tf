@@ -31,6 +31,7 @@ resource "confluent_kafka_cluster" "basic" {
   }
 }
 
+
 data "confluent_schema_registry_cluster" "essentials" {
   environment {
     id = confluent_environment.staging.id
