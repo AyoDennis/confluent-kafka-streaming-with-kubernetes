@@ -1,0 +1,31 @@
+{
+  "$id": "platform_engineering.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema1",
+  "additionalProperties": false,
+  "description": "Sample schema to test schema.",
+  "properties": {
+    "name": {
+      "description": "stores the user's address.",
+      "type": "string"
+    },
+    "address": {
+      "description": "Year the user joined us.",
+      "type": "integer"
+    },
+    "email": {
+      "description": "The string is used to store the name of the user.",
+      "type": "string"
+    },
+    "occupation": {
+      "description": "The string is used to store the occupation of the user.",
+      "type": "string"
+    },
+    "created_at": {
+      "description": "The year when the user was created.",
+      "format": "integer",
+      "type": "string"
+    }
+  },
+  "title": "project-schema",
+  "type": "object"
+}
