@@ -41,3 +41,135 @@ data "confluent_schema_registry_cluster" "essentials" {
     confluent_kafka_cluster.basic
   ]
 }
+
+resource "confluent_service_account" "app-manager" {
+  display_name = "app-manager"
+  description  = "Service account to manage the Kafka cluster"
+}
+
+resource "confluent_role_binding" "app-manager-kafka-cluster-admin" {
+  principal   = "User:${confluent_service_account.app-manager.id}"
+  role_name   = "CloudClusterAdmin"
+  crn_pattern = confluent_kafka_cluster.basic.rbac_crn
+}
+
+resource "confluent_api_key" "app-manager-kafka-api-key" {
+  display_name = "app-manager-kafka-api-key"
+  description  = "Kafka API Key that is owned by 'app-manager' service account"
+  owner {
+    id          = confluent_service_account.app-manager.id
+    api_version = confluent_service_account.app-manager.api_version
+    kind        = confluent_service_account.app-manager.kind
+  }
+
+  managed_resource {
+    id          = confluent_kafka_cluster.basic.id
+    api_version = confluent_kafka_cluster.basic.api_version
+    kind        = confluent_kafka_cluster.basic.kind
+
+    environment {
+      id = confluent_environment.staging.id
+    }
+  }
+
+  depends_on = [
+    confluent_role_binding.app-manager-kafka-cluster-admin
+  ]
+}
+
+resource "confluent_kafka_topic" "customer-information" {
+  kafka_cluster {
+    id = confluent_kafka_cluster.basic.id
+  }
+  topic_name    = "customer-information"
+  rest_endpoint = confluent_kafka_cluster.basic.rest_endpoint
+  partitions_count = 3
+  credentials {
+    key    = confluent_api_key.app-manager-kafka-api-key.id
+    secret = confluent_api_key.app-manager-kafka-api-key.secret
+  }
+}
+
+
+resource "confluent_role_binding" "schema_registry_write_all_subjects" {
+  principal   = "User:${confluent_service_account.app-manager.id}"
+  role_name   = "DeveloperWrite"
+  crn_pattern = "${data.confluent_schema_registry_cluster.essentials.resource_name}/subject=*"
+
+  depends_on = [
+    confluent_service_account.app-manager,
+    data.confluent_schema_registry_cluster.essentials
+  ]
+}
+
+
+resource "confluent_api_key" "schema_registry_key" {
+  display_name = "Schema Registry API Key for app-manager"
+  description  = "API key for Schema Registry access"
+
+  owner {
+    id          = confluent_service_account.app-manager.id
+    api_version = confluent_service_account.app-manager.api_version
+    kind        = confluent_service_account.app-manager.kind
+  }
+
+  managed_resource {
+    id          = data.confluent_schema_registry_cluster.essentials.id
+    api_version = data.confluent_schema_registry_cluster.essentials.api_version
+    kind        = data.confluent_schema_registry_cluster.essentials.kind
+
+    environment {
+      id = confluent_environment.staging.id
+    }
+  }
+
+  depends_on = [
+    data.confluent_schema_registry_cluster.essentials,
+    confluent_role_binding.schema_registry_write_all_subjects
+  ]
+}
+
+
+## create contract
+resource "confluent_schema" "my_data_contract" {
+  subject_name = "${confluent_kafka_topic.customer-information.topic_name}-value"
+  format       = "JSON"
+  schema       = file("${path.module}/project_schema.json")
+
+  schema_registry_cluster {
+    id = data.confluent_schema_registry_cluster.essentials.id
+  }
+
+  rest_endpoint = data.confluent_schema_registry_cluster.essentials.rest_endpoint
+
+  depends_on = [
+    confluent_api_key.schema_registry_key
+  ]
+
+  credentials {
+    key    = confluent_api_key.schema_registry_key.id
+    secret = confluent_api_key.schema_registry_key.secret
+  }
+}
+#testing-value
+
+# resource "confluent_schema" "test_contract" {
+#   subject_name = "testing-value"
+#   format       = "JSON"
+#   schema       = file("${path.module}/testing-value.json")
+
+#   schema_registry_cluster {
+#     id = data.confluent_schema_registry_cluster.essentials.id
+#   }
+
+#   rest_endpoint = data.confluent_schema_registry_cluster.essentials.rest_endpoint
+
+#   depends_on = [
+#     confluent_api_key.schema_registry_key
+#   ]
+
+#   credentials {
+#     key    = confluent_api_key.schema_registry_key.id
+#     secret = confluent_api_key.schema_registry_key.secret
+#   }
+# }
