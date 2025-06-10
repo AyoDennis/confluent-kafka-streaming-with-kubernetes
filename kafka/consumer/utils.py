@@ -1,0 +1,1 @@
+""" To hold utility functions for the Kafka consumer module. """
