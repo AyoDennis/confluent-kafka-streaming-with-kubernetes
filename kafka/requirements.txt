@@ -3,3 +3,4 @@ kafka-python==2.2.8
 confluent-kafka==2.10.0
 cachetools
 authlib
+awswrangler==3.12.0
