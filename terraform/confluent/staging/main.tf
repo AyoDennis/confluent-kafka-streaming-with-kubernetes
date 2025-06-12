@@ -93,8 +93,8 @@ resource "confluent_kafka_topic" "customer-information" {
 
 resource "confluent_role_binding" "schema_registry_write_all_subjects" {
   principal   = "User:${confluent_service_account.app-manager.id}"
-  role_name   = "DeveloperWrite"
-  crn_pattern = "${data.confluent_schema_registry_cluster.essentials.resource_name}/subject=*"
+  role_name   = "ResourceOwner"
+  crn_pattern = "${data.confluent_schema_registry_cluster.essentials.resource_name}/subject=customer-information-value"
 
   depends_on = [
     confluent_service_account.app-manager,
@@ -151,25 +151,71 @@ resource "confluent_schema" "my_data_contract" {
     secret = confluent_api_key.schema_registry_key.secret
   }
 }
-#testing-value
 
-# resource "confluent_schema" "test_contract" {
-#   subject_name = "testing-value"
-#   format       = "JSON"
-#   schema       = file("${path.module}/testing-value.json")
 
-#   schema_registry_cluster {
-#     id = data.confluent_schema_registry_cluster.essentials.id
-#   }
 
-#   rest_endpoint = data.confluent_schema_registry_cluster.essentials.rest_endpoint
+resource "confluent_service_account" "app-producer" {
+  display_name = "app-producer"
+  description  = "Service account to produce to 'customer-information' topic of 'staging' Kafka cluster"
+}
 
-#   depends_on = [
-#     confluent_api_key.schema_registry_key
-#   ]
 
-#   credentials {
-#     key    = confluent_api_key.schema_registry_key.id
-#     secret = confluent_api_key.schema_registry_key.secret
-#   }
-# }
+resource "confluent_kafka_acl" "app-producer-write-on-topic" {
+  kafka_cluster {
+    id = confluent_kafka_cluster.basic.id
+  }
+  resource_type = "TOPIC"
+  resource_name = confluent_kafka_topic.customer-information.topic_name
+  pattern_type  = "LITERAL"
+  principal     = "User:${confluent_service_account.app-producer.id}"
+  host          = "*"
+  operation     = "WRITE"
+  permission    = "ALLOW"
+  rest_endpoint = confluent_kafka_cluster.basic.rest_endpoint
+  credentials {
+    key    = confluent_api_key.app-manager-kafka-api-key.id
+    secret = confluent_api_key.app-manager-kafka-api-key.secret
+  }
+}
+
+
+resource "confluent_api_key" "app-producer-kafka-api-key" {
+  display_name = "app-producer-kafka-api-key"
+  description  = "Kafka API Key that is owned by 'app-producer' service account"
+  owner {
+    id          = confluent_service_account.app-producer.id
+    api_version = confluent_service_account.app-producer.api_version
+    kind        = confluent_service_account.app-producer.kind
+  }
+
+  managed_resource {
+    id          = confluent_kafka_cluster.basic.id
+    api_version = confluent_kafka_cluster.basic.api_version
+    kind        = confluent_kafka_cluster.basic.kind
+
+    environment {
+      id = confluent_environment.staging.id
+    }
+  }
+
+  depends_on = [
+    confluent_service_account.app-producer
+  ]
+}
+
+
+resource "confluent_subject_config" "customer-information-compatibility" {
+  subject_name = confluent_schema.my_data_contract.subject_name
+  compatibility_level = "FORWARD"
+
+  schema_registry_cluster {
+    id = data.confluent_schema_registry_cluster.essentials.id
+  }
+
+  rest_endpoint = data.confluent_schema_registry_cluster.essentials.rest_endpoint
+
+  credentials {
+    key    = confluent_api_key.app-manager-kafka-api-key.id
+    secret = confluent_api_key.app-manager-kafka-api-key.secret
+  }
+}
