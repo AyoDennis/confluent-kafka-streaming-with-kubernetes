@@ -11,7 +11,7 @@ from kafka.producer.data import get_customer_info
 
 TOPIC = "orders"
 
-config = {
+conf = {
      'bootstrap.servers'=os.environ.get("BOOTSTRAP_SERVER"),
      'security.protocol'="SASL_SSL",
      'sasl.mechanisms'="PLAIN",
@@ -32,7 +32,7 @@ def delivery_report(err, msg) -> None:
     else:
         print(f'Message delivered to {msg.topic()} [{msg.partition()}] at offset {msg.offset()}')
 
-conf = read_config()
+# conf = read_config()
 
 schema_registry_conf = {
     'url': conf.get("schema_url"),
