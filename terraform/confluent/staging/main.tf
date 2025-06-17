@@ -202,20 +202,3 @@ resource "confluent_api_key" "app-producer-kafka-api-key" {
     confluent_service_account.app-producer
   ]
 }
-
-
-resource "confluent_subject_config" "customer-information-compatibility" {
-  subject_name = confluent_schema.my_data_contract.subject_name
-  compatibility_level = "FORWARD"
-
-  schema_registry_cluster {
-    id = data.confluent_schema_registry_cluster.essentials.id
-  }
-
-  rest_endpoint = data.confluent_schema_registry_cluster.essentials.rest_endpoint
-
-  credentials {
-    key    = confluent_api_key.app-manager-kafka-api-key.id
-    secret = confluent_api_key.app-manager-kafka-api-key.secret
-  }
-}

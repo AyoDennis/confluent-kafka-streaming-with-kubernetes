@@ -8,7 +8,7 @@ import awswrangler as wr
 import boto3
 
 
-TOPIC = "orders"
+TOPIC = "customer-information"
 
 
 def read_config() -> dict:
@@ -16,8 +16,8 @@ def read_config() -> dict:
   # and returns it as a key-value map
   config = {}
   # Ensure you run the script from the kafka directory
-  # where the client.properties file is located
-  with open("client.properties") as fh:
+  # where the config.properties file is located
+  with open("config.properties") as fh:
     for line in fh:
       line = line.strip()
       if len(line) != 0 and line[0] != "#":
@@ -29,7 +29,7 @@ def read_config() -> dict:
 def fetch_schema(topic, conf):
     schema_registry_conf = {
         'url': conf.get("schema_url"),
-        'basic.auth.user.info': f'{conf.schema_key}:{conf.schema_secret}'
+        'basic.auth.user.info': f'{conf.get("schema_key")}:{conf.get("schema_secret")}'
     }
 
     # create a Schema Registry client
@@ -45,12 +45,20 @@ def consume(topic, config):
     config["group.id"] = "DLA-1"
     config["auto.offset.reset"] = "earliest"
 
+
+    # fetch schema first
+    schema = fetch_schema(topic, config)
+    keys_to_remove = ['schema_url', 'schema_key', 'schema_secret']
+    for key in keys_to_remove:
+        config.pop(key, None)
+
+
     # creates a new consumer instance
     consumer = Consumer(config)
     consumer = DeserializingConsumer({
         **config,
         'key.deserializer': lambda k, c: k.decode("utf-8") if k else None,
-        'value.deserializer': JSONDeserializer(fetch_schema(topic, config)),
+        'value.deserializer': JSONDeserializer(schema),
         'enable.auto.commit': False
     })
 

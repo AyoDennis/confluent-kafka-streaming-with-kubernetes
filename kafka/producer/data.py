@@ -13,7 +13,7 @@ def get_customer_info():
     return {
         "customer_id": str(unique_id),
         "name": fake.name(),
-        "address": fake.address(),
+        "address1": fake.address(),
         "email": fake.email(),
         "occupation": fake.job(),
         "created_at": fake.year()

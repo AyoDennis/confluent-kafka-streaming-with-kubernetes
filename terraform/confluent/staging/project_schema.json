@@ -13,7 +13,7 @@
       "type": "string"
     },
     "address": {
-      "description": "Year the user joined us.",
+      "description": "Year the user joined us. - not in use",
       "type": "integer"
     },
     "email": {
@@ -26,6 +26,11 @@
     },
     "created_at": {
       "description": "The year when the user was created.",
+      "format": "integer",
+      "type": "string"
+    },
+    "address1": {
+      "description": "The real address of the user",
       "format": "integer",
       "type": "string"
     }

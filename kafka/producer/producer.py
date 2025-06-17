@@ -78,6 +78,7 @@ def produce_messages():
                 on_delivery=delivery_report
             )
             producer.poll(0)
+            time.sleep(5)
     except KeyboardInterrupt:
         print("Producer interrupted by user.")
     finally:
@@ -85,6 +86,5 @@ def produce_messages():
 
 
 if __name__ == "__main__":
-    while True:
-        produce_messages()
-        time.sleep(5)
+    produce_messages()
+
