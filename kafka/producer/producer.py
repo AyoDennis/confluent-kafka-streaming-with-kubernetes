@@ -7,9 +7,9 @@ from confluent_kafka.serialization import StringSerializer
 from confluent_kafka.schema_registry import SchemaRegistryClient
 from confluent_kafka.schema_registry.json_schema import JSONSerializer
 
-from kafka.producer.data import get_customer_info
+from data import get_customer_info
 
-TOPIC = "orders"
+TOPIC = "customer-information"
 
 conf = {
      'bootstrap.servers'=os.environ.get("BOOTSTRAP_SERVER"),
@@ -36,16 +36,21 @@ def delivery_report(err, msg) -> None:
 
 schema_registry_conf = {
     'url': conf.get("schema_url"),
-    'basic.auth.user.info': f'{conf.schema_key}:{conf.schema_secret}'
+    'basic.auth.user.info': f'{conf.get("schema_key")}:{conf.get("schema_secret")}'
 }
 
+keys_to_remove = ['schema_url', 'schema_key', 'schema_secret']
+for key in keys_to_remove:
+    conf.pop(key, None)
 
+
+print(conf.keys())
 
 # create a Schema Registry client
 schema_registry_client = SchemaRegistryClient(schema_registry_conf)
 
 # retrieve the json schema string
-schema_response = schema_registry_client.get_latest_version('orders-value')
+schema_response = schema_registry_client.get_latest_version(f'{TOPIC}-value')
 schema_str = schema_response.schema.schema_str
 
 # create a JSON serializer using the schema
@@ -74,6 +79,7 @@ def produce_messages():
                 on_delivery=delivery_report
             )
             producer.poll(0)
+            time.sleep(5)
     except KeyboardInterrupt:
         print("Producer interrupted by user.")
     finally:
@@ -81,6 +87,5 @@ def produce_messages():
 
 
 if __name__ == "__main__":
-    while True:
-        produce_messages()
-        time.sleep(5)
+    produce_messages()
+
