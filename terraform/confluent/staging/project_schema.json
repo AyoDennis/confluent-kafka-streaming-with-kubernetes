@@ -4,12 +4,16 @@
   "additionalProperties": false,
   "description": "Sample schema to test schema.",
   "properties": {
+    "customer_id": {
+      "description": "The unique identifier for the user.",
+      "type": "string"
+    },
     "name": {
       "description": "stores the user's address.",
       "type": "string"
     },
     "address": {
-      "description": "Year the user joined us.",
+      "description": "Year the user joined us. - not in use",
       "type": "integer"
     },
     "email": {
@@ -22,6 +26,11 @@
     },
     "created_at": {
       "description": "The year when the user was created.",
+      "format": "integer",
+      "type": "string"
+    },
+    "address1": {
+      "description": "The real address of the user",
       "format": "integer",
       "type": "string"
     }

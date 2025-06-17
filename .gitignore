@@ -1,6 +1,6 @@
 config.properties
-
-
+*key.txt
+*secret.txt
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
