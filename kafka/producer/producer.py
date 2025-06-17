@@ -12,16 +12,16 @@ from data import get_customer_info
 TOPIC = "customer-information"
 
 conf = {
-     'bootstrap.servers'=os.environ.get("BOOTSTRAP_SERVER"),
-     'security.protocol'="SASL_SSL",
-     'sasl.mechanisms'="PLAIN",
-     'sasl.username'=os.environ.get("PRODUCER_SASL_USERNAME"),
-     'sasl.password'=os.environ.get("PRODUCER_SASL_PASSWORD"),
-     'client.id'=os.environ.get("CLIENT_ID"),
-     'schema_url'=os.environ.get("SCHEMA_URL"),
-     'schema_key'=os.environ.get("SCHEMA_KEY"),
-     'schema_secret'=os.environ.get("SCHEMA_SECRET"),
-     'session.timeout.ms'=45000
+     'bootstrap.servers':os.environ.get("BOOTSTRAP_SERVER"),
+     'security.protocol':"SASL_SSL",
+     'sasl.mechanisms':"PLAIN",
+     'sasl.username':os.environ.get("PRODUCER_SASL_USERNAME"),
+     'sasl.password':os.environ.get("PRODUCER_SASL_PASSWORD"),
+     'client.id':os.environ.get("CLIENT_ID"),
+     'schema_url':os.environ.get("SCHEMA_URL"),
+     'schema_key':os.environ.get("SCHEMA_KEY"),
+     'schema_secret':os.environ.get("SCHEMA_SECRET"),
+     'session.timeout.ms':45000
   }
 
 
