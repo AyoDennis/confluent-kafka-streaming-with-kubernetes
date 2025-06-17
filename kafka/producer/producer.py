@@ -1,4 +1,5 @@
 import time
+import os
 
 
 from confluent_kafka import SerializingProducer
@@ -10,19 +11,18 @@ from kafka.producer.data import get_customer_info
 
 TOPIC = "orders"
 
-def read_config() -> dict:
-  # reads the client configuration from client.properties
-  # and returns it as a key-value map
-  config = {}
-  # Ensure you run the script from the kafka directory
-  # where the client.properties file is located
-  with open("client.properties") as fh:
-    for line in fh:
-      line = line.strip()
-      if len(line) != 0 and line[0] != "#":
-        parameter, value = line.strip().split('=', 1)
-        config[parameter] = value.strip()
-  return config
+config = {
+     'bootstrap.servers'=os.environ.get("BOOTSTRAP_SERVER"),
+     'security.protocol'="SASL_SSL",
+     'sasl.mechanisms'="PLAIN",
+     'sasl.username'=os.environ.get("PRODUCER_SASL_USERNAME"),
+     'sasl.password'=os.environ.get("PRODUCER_SASL_PASSWORD"),
+     'client.id'=os.environ.get("CLIENT_ID"),
+     'schema_url'=os.environ.get("SCHEMA_URL"),
+     'schema_key'=os.environ.get("SCHEMA_KEY"),
+     'schema_secret'=os.environ.get("SCHEMA_SECRET"),
+     'session.timeout.ms'=45000
+  }
 
 
 def delivery_report(err, msg) -> None:
