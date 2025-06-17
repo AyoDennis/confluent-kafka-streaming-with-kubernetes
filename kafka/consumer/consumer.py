@@ -17,7 +17,7 @@ def read_config() -> dict:
   config = {}
   # Ensure you run the script from the kafka directory
   # where the config.properties file is located
-  with open("config.properties") as fh:
+  with open("consumer/config.properties") as fh:
     for line in fh:
       line = line.strip()
       if len(line) != 0 and line[0] != "#":
@@ -74,7 +74,7 @@ def consume(topic, config):
         # consumer polls the topic and prints any incoming messages
             msg = consumer.poll(1.0)
             if msg is not None and msg.error() is None:
-                batch.append(msg.value)
+                batch.append(msg.value())
                 if len(batch) >= BATCH_SIZE or (time.time() - last_flush) >= FLUSH_INTERVAL:
                     print(f"Batch of {len(batch)} messages received.")
                     filename = f"batch_{int(time.time())}.jsonl"
@@ -92,7 +92,7 @@ def consume(topic, config):
                     except Exception as e:
                         print(f"Error uploading to S3: {e}")
                 elif msg is not None:
-                    print(f"Error: {msg.error()}")
+                     print("Message consumed.")
             else:
                 print("No new messages received.")
     except KeyboardInterrupt:

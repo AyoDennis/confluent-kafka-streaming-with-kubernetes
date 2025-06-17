@@ -16,7 +16,7 @@ def read_config() -> dict:
   config = {}
   # Ensure you run the script from the kafka directory
   # where the config.properties file is located
-  with open("config.properties") as fh:
+  with open("producer/config.properties") as fh:
     for line in fh:
       line = line.strip()
       if len(line) != 0 and line[0] != "#":
