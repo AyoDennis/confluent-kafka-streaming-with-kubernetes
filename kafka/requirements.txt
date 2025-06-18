@@ -1,6 +1,6 @@
 Faker==37.3.0
-# kafka-python==2.2.8
-# confluent-kafka==1.5.0
+kafka-python==2.2.8
+confluent-kafka
 cachetools
 authlib
 awswrangler==3.12.0
