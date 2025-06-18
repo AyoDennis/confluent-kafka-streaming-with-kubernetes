@@ -51,4 +51,9 @@ spec:
             secretKeyRef:
               name: final-secret
               key: SCHEMA_KEY
+          - name: SCHEMA_SECRET
+            valueFrom:
+            secretKeyRef:
+              name: final-secret
+              key: SCHEMA_SECRET
 
