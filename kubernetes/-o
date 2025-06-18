@@ -1,0 +1,17 @@
+Name:         final-secret
+Namespace:    default
+Labels:       reconcile.external-secrets.io/created-by=d951d7674c4e01853c5853e6c5ace3bf58e1872149ea47bad0e7c330
+              reconcile.external-secrets.io/managed=true
+Annotations:  reconcile.external-secrets.io/data-hash: 27dc1e0d96c8496fc78d675b4735b55cdc589c946808bd98ac6187c3
+
+Type:  Opaque
+
+Data
+====
+PRODUCER_SASL_PASSWORD:  64 bytes
+PRODUCER_SASL_USERNAME:  16 bytes
+SCHEMA_KEY:              16 bytes
+SCHEMA_SECRET:           64 bytes
+SCHEMA_URL:              48 bytes
+BOOTSTRAP_SERVER:        44 bytes
+PRODUCER_CLIENT_ID:      57 bytes

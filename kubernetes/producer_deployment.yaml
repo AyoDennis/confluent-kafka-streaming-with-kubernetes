@@ -8,17 +8,19 @@ metadata:
 spec:
   selector: 
     matchLabels:
+      app: my-app
       type: producer
-  replicas: 2
+  replicas: 1
   template: 
     metadata:
       name: locally-sourced-image
       labels:
+        app: my-app
         type: producer
     spec:
       containers:
-      - name: producer_image
-        image: docker.io/library/producer_image:v3
+      - name: producer-image
+        image: docker.io/library/producer_image:v1
         imagePullPolicy: Never
         env:
           - name: BOOTSTRAP_SERVER
@@ -38,22 +40,81 @@ spec:
                 key: PRODUCER_SASL_PASSWORD
           - name: PRODUCER_CLIENT_ID
             valueFrom:
-            secretKeyRef:
-              name: final-secret
-              key: PRODUCER_CLIENT_ID
+              secretKeyRef:
+                name: final-secret
+                key: PRODUCER_CLIENT_ID
           - name: SCHEMA_URL
             valueFrom:
-            secretKeyRef:
-              name: final-secret
-              key: SCHEMA_URL
+              secretKeyRef:
+                name: final-secret
+                key: SCHEMA_URL
           - name: SCHEMA_KEY
             valueFrom:
-            secretKeyRef:
-              name: final-secret
-              key: SCHEMA_KEY
+              secretKeyRef:
+                name: final-secret
+                key: SCHEMA_KEY
           - name: SCHEMA_SECRET
             valueFrom:
-            secretKeyRef:
-              name: final-secret
-              key: SCHEMA_SECRET
+              secretKeyRef:
+                name: final-secret
+                key: SCHEMA_SECRET
 
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: producer-deployment
+#   labels: 
+#     app: my-app
+#     type: confluent-cloud
+# spec:
+#   selector: 
+#     matchLabels:
+#       app: my-app  # Should match pod template labels
+#       type: producer
+#   replicas: 2
+#   template: 
+#     metadata:
+#       labels:
+#         app: my-app  # Must match selector
+#         type: producer
+#     spec:
+#       containers:
+#       - name: producer-image  # Changed to more standard name
+#         image: producer_image:v1  # Simplified image name
+#         imagePullPolicy: Never  # Only if using local image
+#         env:
+#         - name: BOOTSTRAP_SERVER
+#           valueFrom:
+#             secretKeyRef:
+#               name: final-secret
+#               key: BOOTSTRAP_SERVER
+#         - name: PRODUCER_SASL_USERNAME
+#           valueFrom:
+#             secretKeyRef:
+#               name: final-secret
+#               key: PRODUCER_SASL_USERNAME
+#         - name: PRODUCER_SASL_PASSWORD
+#           valueFrom:
+#             secretKeyRef:
+#               name: final-secret
+#               key: PRODUCER_SASL_PASSWORD
+#         - name: PRODUCER_CLIENT_ID
+#           valueFrom:
+#             secretKeyRef:
+#               name: final-secret
+#               key: PRODUCER_CLIENT_ID
+#         - name: SCHEMA_URL
+#           valueFrom:
+#             secretKeyRef:
+#               name: final-secret
+#               key: SCHEMA_URL
+#         - name: SCHEMA_KEY
+#           valueFrom:
+#             secretKeyRef:
+#               name: final-secret
+#               key: SCHEMA_KEY
+#         - name: SCHEMA_SECRET
+#           valueFrom:
+#             secretKeyRef:
+#               name: final-secret
+#               key: SCHEMA_SECRET
