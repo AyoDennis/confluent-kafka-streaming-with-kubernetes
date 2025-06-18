@@ -17,7 +17,7 @@ conf = {
      'sasl.mechanisms':"PLAIN",
      'sasl.username':os.environ.get("PRODUCER_SASL_USERNAME"),
      'sasl.password':os.environ.get("PRODUCER_SASL_PASSWORD"),
-     'client.id':os.environ.get("CLIENT_ID"),
+     'client.id':os.environ.get("PRODUCER_CLIENT_ID"),
      'schema_url':os.environ.get("SCHEMA_URL"),
      'schema_key':os.environ.get("SCHEMA_KEY"),
      'schema_secret':os.environ.get("SCHEMA_SECRET"),

@@ -1,11 +1,7 @@
-FROM confluentinc/cp-kafka:latest-ubi9
-
+FROM python:3.9-slim
 
 WORKDIR /team
-
-COPY requirements.txt /team
+COPY . .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
-
-CMD [ "python", "producer.py" ]
+CMD ["python", "producer/producer.py"]
