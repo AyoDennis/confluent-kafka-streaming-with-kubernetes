@@ -36,3 +36,10 @@ spec:
               secretKeyRef:
                 name: final-secret
                 key: PRODUCER_SASL_PASSWORD
+
+          - name: PRODUCER_CLIENT_ID
+            valueFrom:
+            secretKeyRef:
+              name: final-secret
+              key: PRODUCER_CLIENT_ID
+
