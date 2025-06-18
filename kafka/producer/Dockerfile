@@ -1,4 +1,5 @@
-FROM python:3.13-alpine
+FROM confluentinc/cp-kafka:latest-ubi9
+
 
 WORKDIR /team
 
@@ -7,4 +8,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD [ "python", "./producer.py" ]
+CMD [ "python", "producer.py" ]

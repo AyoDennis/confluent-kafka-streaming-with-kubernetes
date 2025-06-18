@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: producer-deployment
+  labels: 
+    app: my-app
+    type: confluent-cloud
+spec:
+  selector: 
+    matchLabels:
+      type: producer
+  replicas: 2
+  template: 
+    metadata:
+      name: locally-sourced-image
+      labels:
+        type: producer
+    spec:
+      containers:
+      - name: producer_image
+        image: docker.io/library/producer_image:v3
+        imagePullPolicy: Never
+        env:
+          - name: BOOTSTRAP_SERVER
+            valueFrom:
+              secretKeyRef:
+                name: final-secret
+                key: BOOTSTRAP_SERVER
+          - name: PRODUCER_SASL_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: final-secret
+                key: PRODUCER_SASL_USERNAME
+          - name: PRODUCER_SASL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: final-secret
+                key: PRODUCER_SASL_PASSWORD
