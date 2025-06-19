@@ -40,6 +40,17 @@ def fetch_schema(topic, conf):
     return schema_response.schema.schema_str
 
 
+def aws_session():
+    """
+    Instantiates aws session"""
+    session = boto3.Session(
+        aws_access_key_id=os.environ.get('AWS_ACCESS_KEY'),
+        aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY'),
+        region_name=os.environ.get("REGION"))
+    return session
+
+
+
 def consume(topic, config):
     # sets the consumer group ID and offset
     config["group.id"] = "DLA-1"
@@ -85,7 +96,7 @@ def consume(topic, config):
                         print(f"Batch written to {filename}")
                 
                     try:
-                        wr.s3.upload(local_file=path, path=f's3://kafka-kubernetes-project/kafka-consumption/{filename}')
+                        wr.s3.upload(local_file=path, boto3_session=aws_session(), path=f's3://kafka-kubernetes-project/kafka-consumption/{filename}')
                         consumer.commit()
                         batch.clear()
                         last_flush = time.time()
