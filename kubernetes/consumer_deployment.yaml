@@ -58,12 +58,12 @@ spec:
               secretKeyRef:
                 name: final-secret
                 key: SCHEMA_SECRET
-          - name: ACCESS_KEY
+          - name: AWS_ACCESS_KEY
             valueFrom:
               secretKeyRef:
                 name: final-secret
                 key: AWS_ACCESS_KEY
-          - name: SECRET_KEY
+          - name: AWS_SECRET_ACCESS_KEY
             valueFrom:
               secretKeyRef:
                 name: final-secret
