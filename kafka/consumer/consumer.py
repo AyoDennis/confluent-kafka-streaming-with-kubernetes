@@ -4,6 +4,7 @@ from confluent_kafka import DeserializingConsumer
 from confluent_kafka.schema_registry import SchemaRegistryClient
 import json
 import time
+import os
 import awswrangler as wr
 import boto3
 
@@ -11,19 +12,18 @@ import boto3
 TOPIC = "customer-information"
 
 
-def read_config() -> dict:
-  # reads the client configuration from client.properties
-  # and returns it as a key-value map
-  config = {}
-  # Ensure you run the script from the kafka directory
-  # where the config.properties file is located
-  with open("consumer/config.properties") as fh:
-    for line in fh:
-      line = line.strip()
-      if len(line) != 0 and line[0] != "#":
-        parameter, value = line.strip().split('=', 1)
-        config[parameter] = value.strip()
-  return config
+conf = {
+     'bootstrap.servers':os.environ.get("BOOTSTRAP_SERVER"),
+     'security.protocol':"SASL_SSL",
+     'sasl.mechanisms':"PLAIN",
+     'sasl.username':os.environ.get("CONSUMER_SASL_USERNAME"),
+     'sasl.password':os.environ.get("CONSUMER_SASL_PASSWORD"),
+     'client.id':os.environ.get("CONSUMER_CLIENT_ID"),
+     'schema_url':os.environ.get("SCHEMA_URL"),
+     'schema_key':os.environ.get("SCHEMA_KEY"),
+     'schema_secret':os.environ.get("SCHEMA_SECRET"),
+     'session.timeout.ms':45000
+  }
 
 
 def fetch_schema(topic, conf):
@@ -103,6 +103,6 @@ def consume(topic, config):
 
 if __name__ == "__main__":
     # reads the client configuration
-    config = read_config()
+    config = conf
     # consumes messages from the specified topic
     consume(TOPIC, config)

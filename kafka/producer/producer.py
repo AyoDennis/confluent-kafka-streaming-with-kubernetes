@@ -21,7 +21,6 @@ conf = {
      'schema_url':os.environ.get("SCHEMA_URL"),
      'schema_key':os.environ.get("SCHEMA_KEY"),
      'schema_secret':os.environ.get("SCHEMA_SECRET"),
-     'session.timeout.ms':45000
   }
 
 
